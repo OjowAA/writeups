@@ -1,6 +1,6 @@
 :root {
     --primary-color: #3498db;
-    --secondary-color: #006917;
+    --secondary-color: #441089;
     --text-color: #111111;
     --background-color: #f4f4f4;
     --background-color-2: #cacaca;
@@ -43,6 +43,12 @@ body {
     width: 100%;
     text-align: center;
     grid-area: footer;
+}
+
+img {
+    width:auto;
+    padding: auto;
+    margin: 2em 0;
 }
 
 /* Text Styles */
@@ -144,7 +150,7 @@ hr {
 
 .darkmode {
     --primary-color: #3498db;
-    --secondary-color: #27ae60;
+    --secondary-color: #079643;
     --text-color: #ecf0f1;
     --background-color: #1d1d1d;
     --background-color-2: #565656;

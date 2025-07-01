@@ -3,24 +3,80 @@
 <br>
 <h2>Summery of the Task</h2>
 <p>
-    The machine for this  challenge is lisening on the port given in the task description.
+    The machine for this challenge is lisening on the port given in the task description.
     When you connect to the port using <code>nc [ip] [port]</code> it will run a file.
-    The binary file named <code>jmpprot <c>red text</c></code> is provided in the task description.
+    The binary file named <code>jmpprot</code> is provided in the task description.
+</p>
+<p>
+    When you run the file if asks for 3 inputs, and if i put in 0 for all 3 inputs, it says <c>Procedure Error</c>.
 </p>
 <pre>
-pre {
-    white-space: pre-wrap;
-    background-color: #efefef;
-    line-height: 2;
-    font-size: 16px;
-    border-radius: 4px;
-    padding: 1em;
-    font-family: monospace;
-}
+~$ ./jmpproc
+Process ID: 0
+Skip bytes proc: 0
+Process bound: 0
+Procedure Error
 </pre>
 <br>
 <h2>Analyzing the binary file</h2>
 <p>
-    tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk 
-    tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk tbh idk
+    When you decompile the binary, theres a main function and three massive blocks of code that just repeat one instruction by spamming it over and over again.
+    The main fuction just reads the 3 inputs.
 </p>
+<img src="writeuppages\Tryhackme\images\jmpproc-main-dis.png">
+<p>
+    Then it attempts to execute the line
+</p>
+<pre>
+(*(<c>code</c> *)(<c>&next_label</c> + <c>uVar1</c> % 0x14))(<c>uVar2</c>);
+</pre>
+<p>
+    This line says to jump to the address of <code>next_label</code> (the name for the first block of instructions) plus an offset of <code>uVar1</code> (The first input given).
+    <code>uVar2</code> is passed as an argument for this function.
+    At the end of <code>next_label</code> and <code>next_label2</code> there is the same instruction, telling it to jump to the next block of code but add an offset based on the input given.
+    <code>next_label3</code> does not have a jmp because its the last label.
+</p>
+<p>
+    Finally, the program ends with a single condition between us and the flag. If <code>(RBP + -0x2c)</code> == 0x539 we win!
+</p>
+<img src="writeuppages\Tryhackme\images\jmpproc-main-end.png">
+<p>
+    Now we know the goal and how the program works. We just need <code>(unaff_RBP + -0x2c)</code> to be equal to 0x539
+</p>
+<h2>Analyzing the next_label's</h2>
+<p>
+    There are 3 next_label's or blocks of repeating instuctions. The instruction for next_label (1) is <code>SHL   dword ptr [RBP  + -0x2c ],0x1</code>.
+    In other words, it bit shifts the working variable <code>(RBP  + -0x2c )</code> by 1. This is repeated 7 times. The instruction for next_label2 is add 0x2 then bit shift by 2.
+    This is repeated 15 times. The instruction for next_label3 is add 1. This is repeated 150 times.
+</p>
+<h2>Solution</h2>
+<p>
+    Because our inputs control the offset of the jumps to each next_label, we can control how many times each instruction gets executed at each next_label.
+    The code equivalent in python looks something like this:
+</p>
+<pre>
+RBP = 1
+for _ in range(7-input1):
+    RBP = RBP &lt;&lt; 1
+for _ in range(15-input2):
+    RBP = RBP + 2
+    RBP = RBP &lt;&lt; 2
+for _ in range(150-input3):
+    RBP = RBP + 1
+if RBP == 0x539:
+    win()
+</pre>
+<p>
+    After a little trial and error, I found the inputs 3 12 5 to work. But were not done yet. The inputs given into the program will increase the address by 0x1.
+    Inorder to get the inputs to skip the whole instruction we need to multiply the inputs by the instuctions size.
+    The sizes of the next_label's instuctions are 3 8 and 4 bytes respectivly.
+    So the inputs needed to get the flag should be 3*3, 12*8, and 5*4, aka <c>9 96 20</c>!
+</p>
+<pre>
+~$ ./jmpproc
+Process ID: 9
+Skip bytes proc: 96
+Process bound: 20
+cat: flag.txt
+</pre>
+<p>Thank's for reading!</p>
