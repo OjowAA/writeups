@@ -6,7 +6,7 @@
     --background-color-2: #cacaca;
     --page-color: #ffffff;
     width: 100%;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
 }
 
 body {
@@ -24,6 +24,7 @@ body {
         "footer footer";
     grid-template-columns: 1fr 2.5fr;
     gap: 5px;
+    font-size: 20px;
 }
 
 #header {
@@ -31,7 +32,7 @@ body {
     color: var(--text-color);
     padding: 1em 3em 1em 3em;
     margin-bottom: 1em;
-    width: 100%;
+    width: auto;
     text-align: left;
     grid-area: header;
 }
@@ -54,17 +55,17 @@ img {
 /* Text Styles */
 
 h1 {
-    font-size: 30px;
+    font-size: 2em;
     font-weight: bold;
 }
 
 h2 {
-    font-size: 20px;
+    font-size: 1.5em;
     font-weight: bold;
 }
 
 p {
-    font-size: 20px;
+    font-size: 1em;
     margin: 10px 0;
     text-indent: 2em;
     line-height: 1.5;
@@ -72,7 +73,7 @@ p {
 }
 
 code {
-    font-size: 16px;
+    font-size: .8em;
     background-color: var(--background-color);
     padding: 5px;
     font-family: Lucida Console, monospace;
@@ -83,7 +84,7 @@ pre {
     background-color: var(--background-color);
     margin: 2em 0;
     line-height: 2;
-    font-size: 16px;
+    font-size: .8em;
     border-radius: 4px;
     padding: 1em;
     font-family: Lucida Console, monospace;
@@ -107,7 +108,7 @@ c {
 /* lists */
 
 li {
-    font-size: 16px;
+    font-size: .8em;
     padding: .2em 0;
 }
 
@@ -130,6 +131,7 @@ li {
     background-color: var(--page-color);
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 }
+
 #fileList {
     grid-area: menu;
     margin: 2em;
@@ -164,4 +166,27 @@ hr {
     border: 1px solid var(--background-color-2);
     border-radius: 5px;
     cursor: pointer;
+}
+
+/* small screen sizing */
+
+@media screen and (max-width: 1000px){
+    body {
+        display: grid;
+        /* font-size: small; */
+        grid-template-columns: 100%;
+        grid-template-areas:
+            "header"
+            "content"
+            "menu"
+            "footer";
+    }
+    #content {
+        padding: 2em;
+        max-width: none;
+        width: auto;
+    }
+    img {
+        width: 90%;
+    }
 }
